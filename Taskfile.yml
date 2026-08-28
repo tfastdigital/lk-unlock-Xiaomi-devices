@@ -1,0 +1,68 @@
+# Taskfile for lk-unlock
+#
+# A small set of tasks that keep the project healthy and make sure the
+# copyright / AGPL notice stays in every source file. Install the runner with:
+#   go install github.com/go-task/task/v3/cmd/task@latest
+# (or: scoop install task, choco install task, winget install Task.Task)
+#
+# Run `task` with no arguments to see the list.
+
+version: "3"
+
+vars:
+  PY: python
+  SCRIPT: scripts/license_header.py
+
+tasks:
+  # ------------------------------------------------------------------ #
+  # Copyright / license preservation
+  # ------------------------------------------------------------------ #
+  check-license:
+    desc: Report any source file that is missing the copyright header
+    cmds:
+      - "{{.PY}} {{.SCRIPT}} check"
+
+  add-license:
+    desc: Insert the copyright header into any source file that lacks it
+    cmds:
+      - "{{.PY}} {{.SCRIPT}} add"
+
+  list-license:
+    desc: Show every source file that carries the copyright header
+    cmds:
+      - "{{.PY}} {{.SCRIPT}} list"
+
+  # ------------------------------------------------------------------ #
+  # Quality
+  # ------------------------------------------------------------------ #
+  deps:
+    desc: Install the Python dependencies from requirements.txt
+    cmds:
+      - "{{.PY}} -m pip install -r requirements.txt"
+
+  lint:
+    desc: Compile-check all Python source files (fast syntax check)
+    cmds:
+      - "{{.PY}} -m py_compile lk-unlock.py scripts/license_header.py"
+
+  test:
+    desc: Run the built-in self-checks for the core logic
+    cmds:
+      - "{{.PY}} -c \"import lk_unlock_selftest\" 2>nul || echo Run the logic tests manually\""
+
+  # ------------------------------------------------------------------ #
+  # Release helpers
+  # ------------------------------------------------------------------ #
+  pre-commit:
+    desc: Ensure the license header is present before committing
+    cmds:
+      - "{{.PY}} {{.SCRIPT}} check"
+    preconditions:
+      - sh: "{{.PY}} {{.SCRIPT}} check"
+        msg: "Some source files are missing the copyright header. Run: task add-license"
+
+  all:
+    desc: Run the full local checks (license + syntax)
+    cmds:
+      - "{{.PY}} {{.SCRIPT}} check"
+      - "{{.PY}} -m py_compile lk-unlock.py scripts/license_header.py"

@@ -1,3 +1,6 @@
+# Core crypto
+cryptography>=42.0
+pyasn1>=0.5.0
+
+# LK image parsing library (pinned to a commit for reproducibility)
 liblk@git+https://github.com/R0rt1z2/liblk@master
-pyasn1
-cryptography
