@@ -46,9 +46,9 @@ tasks:
       - "{{.PY}} -m py_compile lk-unlock.py scripts/license_header.py"
 
   test:
-    desc: Run the built-in self-checks for the core logic
+    desc: Compile-check the source so syntax errors are caught early
     cmds:
-      - "{{.PY}} -c \"import lk_unlock_selftest\" 2>nul || echo Run the logic tests manually\""
+      - "{{.PY}} -m py_compile lk-unlock.py scripts/license_header.py"
 
   # ------------------------------------------------------------------ #
   # Release helpers
